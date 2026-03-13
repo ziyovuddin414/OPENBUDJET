@@ -119,28 +119,17 @@ def get_users_count():
 # ===================== OPB API =====================
 UZ_IPS = ['46.227.123.', '37.110.212.', '46.255.69.', '62.209.128.', '37.110.214.', '31.135.209.']
 
+OPB_PROXY = 'https://ziyovuddi3.temp.swtest.ru/opb.php'
+
 def opb_api(endpoint, data):
-    ip = random.choice(UZ_IPS) + str(random.randint(2, 253))
-    headers = {
-        'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/105.0.0.0 Safari/537.36',
-        'Referer': SITE_LINK,
-        'REMOTE_ADDR': ip,
-        'HTTP_X_FORWARDED_FOR': ip,
-        'HTTP_X_REAL_IP': ip,
-        'X-Forwarded-For': ip,
-        'X-Real-IP': ip,
-        'Origin': 'https://openbudget.uz',
-        'Accept': 'application/json',
-    }
     try:
         r = requests.post(
-            f'https://admin.openbudget.uz/api/v1/{endpoint}',
+            f'{OPB_PROXY}?method={endpoint}',
             data=data,
-            headers=headers,
-            verify=False,
             timeout=30
         )
-        return r.status_code, r.json() if r.text else {}
+        result = r.json()
+        return result.get('code', 0), result.get('data', {})
     except Exception as e:
         return 0, {'error': str(e)}
 
